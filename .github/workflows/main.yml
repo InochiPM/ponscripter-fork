@@ -79,5 +79,4 @@ jobs:
           bash -c "([ "$TRAVIS_OS_NAME" != "linux" ] || sudo chown $USER key) && scp -o StrictHostKeyChecking=no -i key ponscr-answer.zip ${UPLOAD_SERVER}/umineko_exe/umineko-$(cat buildinfo.txt)-answer.zip 2> /dev/null"
         env:
           UPLOAD_SERVER: ${{ secrets.UPLOAD_SERVER }}
-        if: github.ref == 'refs/heads/mod' && env.UPLOAD_SERVER != null
         shell: bash
