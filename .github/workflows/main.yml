@@ -7,13 +7,9 @@ jobs:
   build:
     strategy:
       matrix:
-        steam: ["-steam", ""]
-        os: [windows-2019, macos-10.15, ubuntu-20.04]
+        steam: [""]
+        os: [ubuntu-20.04]
         isinclude: [false] # Makes include add new jobs instead of editing existing ones
-        include:
-          - os: ubuntu-20.04
-            nodep: "-nodep"
-            isinclude: true
     runs-on: ${{ matrix.os }}
     name: ${{ matrix.os }}${{ matrix.steam }}${{ matrix.nodep }}
     steps:
@@ -73,10 +69,17 @@ jobs:
           path: |
             ponscr-question.zip
             ponscr-answer.zip
-      - name: Deploy
+      - name: Rename Files
         run: |
-          bash -c "([ "$TRAVIS_OS_NAME" != "linux" ] || sudo chown $USER key) && scp -o StrictHostKeyChecking=no -i key ponscr-question.zip ${UPLOAD_SERVER}/umineko_exe/umineko-$(cat buildinfo.txt)-question.zip 2> /dev/null"
-          bash -c "([ "$TRAVIS_OS_NAME" != "linux" ] || sudo chown $USER key) && scp -o StrictHostKeyChecking=no -i key ponscr-answer.zip ${UPLOAD_SERVER}/umineko_exe/umineko-$(cat buildinfo.txt)-answer.zip 2> /dev/null"
-        env:
-          UPLOAD_SERVER: ${{ secrets.UPLOAD_SERVER }}
+          bash -c "mv ponscr-question.zip umineko-$(cat buildinfo.txt)-question.zip"
+          bash -c "mv ponscr-answer.zip umineko-$(cat buildinfo.txt)-answer.zip"
         shell: bash
+      # Publish a release, only on tagged commits
+      - name: Release (tag)
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/') # only publish tagged commits
+        with:
+          files: umineko-*.zip
+          draft: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
