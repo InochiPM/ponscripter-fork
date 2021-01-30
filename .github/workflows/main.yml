@@ -4,12 +4,21 @@ env:
   SSH_KEY: ${{ secrets.SSH_KEY }}
   DOWNLOAD_SERVER: ${{ secrets.DOWNLOAD_SERVER }}
 jobs:
+  cancel_duplicates:
+    name: Cancel duplicate jobs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: fkirc/skip-duplicate-actions@master
   build:
     strategy:
       matrix:
-        steam: [""]
-        os: [ubuntu-20.04]
+        steam: ["-steam", ""]
+        os: [windows-2019, macos-10.15, ubuntu-20.04]
         isinclude: [false] # Makes include add new jobs instead of editing existing ones
+        include:
+          - os: ubuntu-20.04
+            nodep: "-nodep"
+            isinclude: true
     runs-on: ${{ matrix.os }}
     name: ${{ matrix.os }}${{ matrix.steam }}${{ matrix.nodep }}
     steps:
