@@ -30,21 +30,22 @@ elif [ "$TRAVIS_OS_NAME" == "linux" ]; then
 			# Ciconia comes with a lib64 directory full of broken stuff
 			# We'll try to build a binary with as few dependencies as possible but internal sdl is broken on linux
 			# Because of that, reference a new lib64 directory, leaving us the option of shipping a working libsdl later
-			./configure --with-internal-sdl-image --with-internal-sdl-mixer --with-internal-smpeg --with-internal-freetype --with-internal-bzip
+			CC="gcc -g" CXX="g++ -g" ./configure --with-internal-sdl-image --with-internal-sdl-mixer --with-internal-smpeg --with-internal-freetype --with-internal-bzip
 			LIBFOLDER="lib64real"
 		else
 			# Program seems to break (testing with Ubuntu 18.04) with internal SDL, so using external SDL
 			# On the other hand, GOG copy is missing libpng12 so on systems with a newer libpng the game doesn't work
 			# Fix that by using internal sdlimage
-			./configure --with-internal-sdl-image
+			CC="gcc -g" CXX="g++ -g" ./configure --with-internal-sdl-image
 		fi
-		LDFLAGS="-Wl,-rpath,XORIGIN/$LIBFOLDER:." make
+		CFLAGS="-g" LDFLAGS="-Wl,-rpath,XORIGIN/$LIBFOLDER:." make
 	fi
 	chrpath -r "\$ORIGIN/$LIBFOLDER:." src/ponscr
 else
 	# Windows build
-	$mingw32 ./configure $STEAM
-	$mingw32 make -j2
+	CC="test" $mingw32 env
+	CC="gcc -g" CXX="g++ -g" $mingw32 ./configure $STEAM
+	CFLAGS="-g" $mingw32 make -j2
 fi
 
 cd src
