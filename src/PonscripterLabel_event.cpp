@@ -24,6 +24,9 @@
  */
 
 #include "PonscripterLabel.h"
+#ifdef __APPLE__
+const os_log_t PONS_LOG = os_log_create("Ponscripter", OS_LOG_CATEGORY_POINTS_OF_INTEREST);
+#endif
 #ifdef LINUX
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -1368,7 +1371,10 @@ int PonscripterLabel::eventLoop()
                 /* It has been longer than the refresh delay since we last started a refresh. Start another */
 
                 last_refresh = current_time;
+
+                SIGNPOST_BEGIN(OS_SIGNPOST_ID_EXCLUSIVE, "Render");
                 rerender();
+                SIGNPOST_END(OS_SIGNPOST_ID_EXCLUSIVE, "Render");
 
                 /* Refresh time since rerender does take some odd ms */
                 current_time = SDL_GetTicks();
@@ -1386,9 +1392,11 @@ int PonscripterLabel::eventLoop()
             if(SDL_PeepEvents(&tmp_event, 1, SDL_PEEKEVENT, SDL_FIRSTEVENT, SDL_LASTEVENT) == 0) {
                 if(timer_event_flag && timer_event_time <= current_time) {
                     timer_event_flag = false;
+                    SIGNPOST_BEGIN(OS_SIGNPOST_ID_EXCLUSIVE, "TimerEvent");
                     if (timerEvent() && timer_event_time <= last_refresh + refresh_delay) {
                         timer_event_time = last_refresh + refresh_delay;
                     }
+                    SIGNPOST_END(OS_SIGNPOST_ID_EXCLUSIVE, "TimerEvent");
                 } else if(last_refresh <= current_time && refresh_delay >= (current_time - last_refresh)) {
                     SDL_Delay(std::min(refresh_delay / 3, refresh_delay - (current_time - last_refresh)));
                 }
