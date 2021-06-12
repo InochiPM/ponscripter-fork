@@ -80,4 +80,4 @@ ONScripter is copyright © 2001-2007 Ogapee.  The Ponscripter fork is
 copyright © 2006-2009 Haeleth.
 
 Ponscripter is licensed under the GNU General Public License, version
-2 or (at your option) any later version.  See COPYING for details.
+2 or (at your option) any later version.  See COPYING for details.  
