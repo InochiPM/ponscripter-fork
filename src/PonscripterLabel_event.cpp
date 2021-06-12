@@ -1199,6 +1199,8 @@ Uint32 PonscripterLabel::getRefreshRateDelay() {
 int PonscripterLabel::eventLoop()
 {
     SDL_Event event, tmp_event;
+    Uint32 frameNo = 0;
+    double perfMultiplier = 1000.0/SDL_GetPerformanceFrequency();
 
     /* Note, this rate can change if the window is dragged to a new
        screen or the monitor settings are changed while running.
@@ -1370,6 +1372,11 @@ int PonscripterLabel::eventLoop()
                 last_refresh = current_time;
                 rerender();
 
+                if (renderTimesFile) {
+                    frameNo++;
+                    if (frameNo % 64 == 0) { fflush(renderTimesFile); }
+                }
+
                 /* Refresh time since rerender does take some odd ms */
                 current_time = SDL_GetTicks();
             }
@@ -1386,8 +1393,25 @@ int PonscripterLabel::eventLoop()
             if(SDL_PeepEvents(&tmp_event, 1, SDL_PEEKEVENT, SDL_FIRSTEVENT, SDL_LASTEVENT) == 0) {
                 if(timer_event_flag && timer_event_time <= current_time) {
                     timer_event_flag = false;
+                    Uint64 begin;
+                    if (renderTimesFile) {
+                        begin = SDL_GetPerformanceCounter();
+                        lastRenderEvent = RENDER_EVENT_UNKNOWN;
+                    }
                     if (timerEvent() && timer_event_time <= last_refresh + refresh_delay) {
                         timer_event_time = last_refresh + refresh_delay;
+                    }
+                    if (renderTimesFile) {
+                        Uint64 elapsed = SDL_GetPerformanceCounter() - begin;
+                        float msElapsed = elapsed * perfMultiplier;
+                        const char* eventName;
+                        switch (lastRenderEvent) {
+                            case RENDER_EVENT_UNKNOWN:    eventName = "TimerEvent"; break;
+                            case RENDER_EVENT_TEXT:       eventName = "Text";       break;
+                            case RENDER_EVENT_EFFECT:     eventName = "Effect";     break;
+                            case RENDER_EVENT_LOAD_IMAGE: eventName = "ImageLoad";  break;
+                        }
+                        fprintf(renderTimesFile, "%d,%s,%f\n", frameNo, eventName, msElapsed);
                     }
                 } else if(last_refresh <= current_time && refresh_delay >= (current_time - last_refresh)) {
                     SDL_Delay(std::min(refresh_delay / 3, refresh_delay - (current_time - last_refresh)));

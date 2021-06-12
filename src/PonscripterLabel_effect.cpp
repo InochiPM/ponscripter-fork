@@ -112,6 +112,8 @@ int PonscripterLabel::setEffect(Effect& effect, bool generate_effect_dst, bool u
 
 int PonscripterLabel::doEffect(Effect& effect, bool clear_dirty_region)
 {
+    if (lastRenderEvent < RENDER_EVENT_EFFECT) { lastRenderEvent = RENDER_EVENT_EFFECT; }
+
     bool first_time = (effect_counter == 0);
 
     int prevduration = effect.duration;

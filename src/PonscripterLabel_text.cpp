@@ -475,6 +475,8 @@ int PonscripterLabel::clickNewPage(bool display_char)
 
 int PonscripterLabel::textCommand()
 {
+    if (lastRenderEvent < RENDER_EVENT_TEXT) { lastRenderEvent = RENDER_EVENT_TEXT; }
+
     if (pretextgosub_label
         && (line_enter_status == 0
             || (line_enter_status == 1

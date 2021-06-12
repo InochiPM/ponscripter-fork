@@ -72,6 +72,7 @@ static void optionHelp()
     printf("      --disable-cpu-gfx\tdo not use Altivec graphics "
            "acceleration routines\n");
 #endif
+    printf("      --record-render-time\tRecord render times to the given csv file\n");
     printf("      --enable-wheeldown-advance\tadvance the text on mouse "
            "wheeldown event\n");
 //    printf("      --nsa-offset offset\tuse byte offset x when reading "
@@ -189,6 +190,11 @@ static void parseOptions(int argc, char **argv, PonscripterLabel &ons,
                 printf("disabling CPU accelerated graphics routines\n");
             }
 #endif
+            else if (!strcmp(argv[0] + 1, "-record-render-time")) {
+                argc--;
+                argv++;
+                ons.recordRenderTimes(argv[0]);
+            }
             else if (!strcmp(argv[0] + 1, "-disable-rescale")) {
                 ons.disableRescale();
             }

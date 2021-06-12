@@ -33,6 +33,8 @@ SDL_Surface *PonscripterLabel::loadImage(const pstring& filename,
 {
     if (!filename) return NULL;
 
+    if (lastRenderEvent < RENDER_EVENT_LOAD_IMAGE) { lastRenderEvent = RENDER_EVENT_LOAD_IMAGE; }
+
     SDL_Surface *tmp = NULL, *tmpb = NULL;
     int location = BaseReader::ARCHIVE_TYPE_NONE;
 

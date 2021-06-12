@@ -676,6 +676,7 @@ PonscripterLabel::PonscripterLabel()
     AnimationInfo::setCpufuncs(AnimationInfo::CPUF_NONE);
 #endif
 
+    renderTimesFile      = NULL;
     disable_rescale_flag = false;
     edit_flag            = false;
     fullscreen_mode      = false;
@@ -789,6 +790,15 @@ void PonscripterLabel::enableWheelDownAdvance()
 void PonscripterLabel::disableCpuGfx()
 {
     AnimationInfo::setCpufuncs(AnimationInfo::CPUF_NONE);
+}
+
+
+void PonscripterLabel::recordRenderTimes(const char* file) {
+    renderTimesFile = fopen(file, "w");
+    if (!renderTimesFile) {
+        fprintf(stderr, "Failed to open %s to record render times to, disabling\n", file);
+    }
+    fputs("Frame,Type,Time\n", renderTimesFile);
 }
 
 

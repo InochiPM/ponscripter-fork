@@ -117,6 +117,7 @@ public:
     void setPreferredWidth(const char *widthstr);
     void enableButtonShortCut();
     void enableWheelDownAdvance();
+    void recordRenderTimes(const char* file);
     void disableCpuGfx();
     void disableRescale();
     void enableEdit();
@@ -404,13 +405,23 @@ private:
            ALPHA_BLEND_MULTIPLE       = 2,
            ALPHA_BLEND_FADE_MASK      = 3,
            ALPHA_BLEND_CROSSFADE_MASK = 4 };
-
+public:
+    enum RenderEventType {
+        RENDER_EVENT_UNKNOWN = 0,
+        RENDER_EVENT_TEXT,
+        RENDER_EVENT_EFFECT,
+        RENDER_EVENT_LOAD_IMAGE,
+    };
+    /// For render time logging
+    RenderEventType lastRenderEvent;
+private:
     // ----------------------------------------
     // start-up options
     pstring registry_file;
     pstring dll_file;
     pstring getret_str;
     int    getret_int;
+    FILE*  renderTimesFile;
     bool   enable_wheeldown_advance_flag;
     bool   disable_rescale_flag;
     bool   edit_flag;
