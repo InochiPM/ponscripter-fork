@@ -1,5 +1,7 @@
 set -e
 
+echo -n "$TRAVIS_OS_NAME$STEAM$NODEP" > buildinfo.txt
+
 if [ -z "$STEAMLESS" ] && [ -z "$SSH_KEY" ]; then
 	echo "Can't get steam API without SSH key, skipping"
 	exit 0
@@ -67,5 +69,3 @@ else
 	zip -9 -r ../ponscr-answer.zip Umineko5to8.app
 fi
 cd ..
-
-echo -n "$TRAVIS_OS_NAME$STEAM$NODEP" > buildinfo.txt

@@ -60,7 +60,7 @@ jobs:
         id: build
         run: |
           if [ "$TRAVIS_OS_NAME" == "linux" ]; then
-            docker run -v $PWD:/pons steambuild bash -c "mv /build/key /pons/key && (mv /build/src/extlib/src/steam-sdk/* /pons/src/extlib/src/steam-sdk/ || true) && . /build/env.txt && cd /pons && bash .travis_run.sh"
+            docker run -v $PWD:/pons steambuild bash -c "(mv /build/key /pons/key || true) && (mv /build/src/extlib/src/steam-sdk/* /pons/src/extlib/src/steam-sdk/ || true) && . /build/env.txt && cd /pons && bash .travis_run.sh"
           else
             bash .travis_run.sh
           fi
@@ -75,8 +75,8 @@ jobs:
             ponscr-answer.zip
       - name: Rename Files
         run: |
-          bash -c "mv ponscr-question.zip umineko-$(cat buildinfo.txt)-question.zip"
-          bash -c "mv ponscr-answer.zip umineko-$(cat buildinfo.txt)-answer.zip"
+          mv ponscr-question.zip umineko-$(cat buildinfo.txt)-question.zip || true
+          mv ponscr-answer.zip umineko-$(cat buildinfo.txt)-answer.zip || true
         shell: bash
       # Publish a release, only on tagged commits
       - name: Release (tag)
